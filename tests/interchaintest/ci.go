@@ -13,8 +13,8 @@ func GetDockerImageInfo() (repo, version string) {
 	repo = TerraClassicMainRepo
 	if !found {
 		// make ictest-build
-		repo = "core"
-		branchVersion = "local"
+		repo = "terra"
+		branchVersion = "ictest"
 	}
 
 	// github converts / to - for pushed docker images

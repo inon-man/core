@@ -1,0 +1,10 @@
+vendor/*
+CHANGELOG.md
+pull_request_template.md
+bug.md
+issue.md
+proto-docs.md
+client/*
+
+x/market/spec/01_concepts.md
+tests/README.md

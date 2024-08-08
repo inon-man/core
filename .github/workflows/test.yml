@@ -1,93 +1,155 @@
-name: Build & Test
+name: Tests / Code Coverage
 on:
   pull_request:
+    branches:
+      - "**"
   push:
     branches:
       - main
       - "release/**"
-permissions:
-  contents: read
+  workflow_dispatch:
+
 concurrency:
-    group: ci-${{ github.ref }}-test
-    cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
-  cleanup-runs:
-    runs-on: ubuntu-latest
+  get_diff:
+    runs-on: buildjet-4vcpu-ubuntu-2204
     steps:
-      - uses: rokroskar/workflow-run-cleanup-action@master
-        env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-    if: "!startsWith(github.ref, 'refs/tags/') && github.ref != 'refs/heads/main'"
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Get git diff
+        uses: technote-space/get-diff-action@v6.1.2
+        with:
+          PATTERNS: |
+            **/**.wasm
+            **/**.go
+            **/**.mod
+            **/**.sum
+            Makefile
+            Dockerfile
+            .github/workflows/test.yml
+      - name: Set output
+        id: vars
+        run: echo "git_diff=$GIT_DIFF" >> $GITHUB_OUTPUT
+    outputs:
+      git_diff: ${{ steps.vars.outputs.git_diff }}
 
   run-tests:
-    runs-on: ubuntu-latest
+    needs: get_diff
+    if: ${{ needs.get_diff.outputs.git_diff || github.actor == 'dependabot[bot]' || github.actor == 'mergify[bot]' }}
+    runs-on: buildjet-4vcpu-ubuntu-2204
     steps:
-      - uses: actions/setup-go@v5
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: 🐿 Setup Golang
+        uses: actions/setup-go@v5
         with:
-          go-version: "1.20"
-          check-latest: true
-      - uses: actions/checkout@v4
+          go-version-file: go.mod
+      - name: Display go version
+        run: go version
       - name: build
         run: |
           make build
       - name: test & coverage report creation
         run: |
-          go test ./... -mod=readonly -timeout 12m -race -coverprofile=coverage.txt -covermode=atomic -tags='ledger test_ledger_mock'
+          make test-cover
 
   liveness-test:
-    runs-on: ubuntu-latest
+    needs: get_diff
+    if: ${{ needs.get_diff.outputs.git_diff || github.actor == 'dependabot[bot]' || github.actor == 'mergify[bot]' }}
+    runs-on: buildjet-4vcpu-ubuntu-2204
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: 🐿 Setup Golang
+        uses: actions/setup-go@v5
         with:
-          go-version: "1.20"
-          check-latest: true
-      - uses: technote-space/get-diff-action@v6
-        id: git_diff
-        with:
-          PATTERNS: |
-            **/**.go
-            go.mod
-            go.sum
+          go-version-file: go.mod
+      - name: Display go version
+        run: go version
       # Enable BuildKit
       - name: Set BuildKit environment variable
         run: |
           echo "DOCKER_BUILDKIT=1" >> $GITHUB_ENV
       - name: start localnet
         run: |
-          make clean localnet-start
-        if: env.GIT_DIFF
+          make localnet-start
       - name: test liveness
         run: |
-          ./contrib/localnet/localnet_liveness.sh 100 3 30 localhost
-        if: env.GIT_DIFF
+          ./tests/localnet/localnet_liveness.sh 100 3 30 localhost
+
   upgrade-test:
-    runs-on: ubuntu-latest
+    needs: get_diff
+    if: ${{ needs.get_diff.outputs.git_diff || github.actor == 'dependabot[bot]' || github.actor == 'mergify[bot]' }}
+    runs-on: buildjet-4vcpu-ubuntu-2204
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version: "1.20"
-          check-latest: true
-      - uses: technote-space/get-diff-action@v6
-        id: git_diff
+      - name: Check out repository
+        uses: actions/checkout@v4
+      # Run upgrade-test only if there are changes in app/upgrades/** 
+      - uses: technote-space/get-diff-action@v6.1.2
         with:
           PATTERNS: |
-            app/upgrades/**/*.go
-      - name: echo diff
-        run: echo '${{ env.GIT_DIFF }}'
+            app/upgrades/**
+      - name: 🐿 Setup Golang
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Display go version
+        run: go version
       # Enable BuildKit
       - name: Set BuildKit environment variable
         run: |
           echo "DOCKER_BUILDKIT=1" >> $GITHUB_ENV
-      - name: start localnet
-        run: |
-          make clean localnet-start-upgrade
-        if: env.GIT_DIFF
       - name: test upgrade
-        run: |
-          chmod +x -R ./contrib/updates
-          ./contrib/updates/upgrade-test.sh
         if: env.GIT_DIFF
+        run: |
+          make localnet-upgrade-test
+
+  e2e:
+    needs: get_diff
+    if: ${{ needs.get_diff.outputs.git_diff || github.actor == 'dependabot[bot]' || github.actor == 'mergify[bot]' }}
+    runs-on: buildjet-4vcpu-ubuntu-2204
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: 🐿 Setup Golang
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Build e2e image
+        uses: docker/build-push-action@v5
+        with:
+          load: true
+          context: .
+          tags: terra:debug
+          build-args: |
+            BASE_IMG_TAG=debug
+            BUILD_TAGS="netgo,muslc"
+      - name: Test e2e and Upgrade
+        run: make test-e2e-ci
+      - name: Dump docker logs on failure
+        if: failure()
+        uses: jwalton/gh-docker-logs@v2
+        with:
+          dest: "./logs"
+      - name: Tar logs
+        if: failure()
+        run: |
+          tar cvzf ./logs.tgz ./logs
+      - name: Upload logs to GitHub
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs.tgz
+          path: ./logs.tgz

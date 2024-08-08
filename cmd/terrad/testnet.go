@@ -68,7 +68,8 @@ Example:
 			}
 			serverCtx := server.GetServerContextFromCmd(cmd)
 			config := serverCtx.Config
-
+			config.P2P.AddrBookStrict = false
+			config.P2P.AllowDuplicateIP = true
 			outputDir, _ := cmd.Flags().GetString(flagOutputDir)
 			keyringBackend, _ := cmd.Flags().GetString(flags.FlagKeyringBackend)
 			chainID, _ := cmd.Flags().GetString(flags.FlagChainID)

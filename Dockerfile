@@ -1,26 +1,26 @@
 # syntax=docker/dockerfile:1
 
+ARG GO_VERSION="1.22"
+# ARG RUNNER_IMAGE="gcr.io/distroless/static-debian11"
+ARG RUNNER_IMAGE="alpine"
+ARG BUILD_TAGS="netgo,ledger,muslc"
+
 ARG source=./
-ARG GO_VERSION="1.20"
 ARG BUILDPLATFORM=linux/amd64
-ARG BASE_IMAGE="golang:${GO_VERSION}-alpine3.18"
-FROM --platform=${BUILDPLATFORM} ${BASE_IMAGE} as base
+ARG BASE_IMAGE="golang:${GO_VERSION}-alpine"
+FROM --platform=${BUILDPLATFORM} ${BASE_IMAGE} AS base
 
 ###############################################################################
 # Builder
 ###############################################################################
 
-FROM base as builder-stage-1
+FROM base AS builder-stage-1
 
 ARG source
 ARG GIT_COMMIT
 ARG GIT_VERSION
 ARG BUILDPLATFORM
-ARG GOOS=linux \
-    GOARCH=amd64
-
-ENV GOOS=$GOOS \ 
-    GOARCH=$GOARCH
+ARG BUILD_TAGS
 
 # NOTE: add libusb-dev to run with LEDGER_ENABLED=true
 RUN set -eux &&\
@@ -70,14 +70,10 @@ RUN set -eux &&\
 
 ###############################################################################
 
-FROM builder-stage-1 as builder-stage-2
+FROM builder-stage-1 AS builder-stage-2
 
 ARG source
-ARG GOOS=linux \
-    GOARCH=amd64
-
-ENV GOOS=$GOOS \ 
-    GOARCH=$GOARCH
+ARG BUILD_TAGS
 
 # Copy the remaining files
 COPY ${source} .
@@ -87,7 +83,7 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
     --mount=type=cache,target=/root/go/pkg/mod \
     go install \
         -mod=readonly \
-        -tags "netgo,muslc" \
+        -tags ${BUILD_TAGS} \
         -ldflags " \
             -w -s -linkmode=external -extldflags \
             '-L/go/src/mimalloc/build -lmimalloc -Wl,-z,muldefs -static' \
@@ -95,21 +91,18 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
             -X github.com/cosmos/cosmos-sdk/version.AppName='terrad' \
             -X github.com/cosmos/cosmos-sdk/version.Version=${GIT_VERSION} \
             -X github.com/cosmos/cosmos-sdk/version.Commit=${GIT_COMMIT} \
-            -X github.com/cosmos/cosmos-sdk/version.BuildTags='netgo,muslc' \
+            -X github.com/cosmos/cosmos-sdk/version.BuildTags=${BUILD_TAGS} \
         " \
         -trimpath \
         ./...
 
 ################################################################################
 
-FROM alpine as terra-core
+FROM ${RUNNER_IMAGE} AS terra-core
 
-RUN apk update && apk add wget lz4 aria2 curl jq gawk coreutils "zlib>1.2.12-r2" libssl3
-
-COPY --from=builder-stage-2 /go/bin/terrad /usr/local/bin/terrad
-
-RUN addgroup -g 1000 terra && \
-    adduser -u 1000 -G terra -D -h /app terra
+COPY --from=builder-stage-2 /go/bin/terrad /bin/terrad
+ENV HOME=/terra
+WORKDIR $HOME
 
 # rest server
 EXPOSE 1317
@@ -120,6 +113,4 @@ EXPOSE 26656
 # tendermint rpc
 EXPOSE 26657
 
-WORKDIR /app
-
-CMD ["terrad", "version"]
+ENTRYPOINT ["terrad"]

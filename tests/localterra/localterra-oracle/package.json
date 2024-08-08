@@ -1,0 +1,24 @@
+{
+  "name": "@classic-terra/localterra-oracle",
+  "version": "0.6.0",
+  "description": "Oracle feeder that votes price as same as current exchange rate on mainnet",
+  "scripts": {
+    "start": "ts-node .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@classic-terra/terra.js": "^3.2.1",
+    "ms": "^2.1.3",
+    "toml": "^3.0.0",
+    "ts-node": "^10.7.0",
+    "typescript": "^5.5.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.1.0"
+  }
+}

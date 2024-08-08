@@ -98,7 +98,7 @@ Query the active list of Terra assets recognized by the types.
 
 $ terrad query oracle actives
 `),
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -124,7 +124,7 @@ func GetCmdQueryParams() *cobra.Command {
 		Use:   "params",
 		Args:  cobra.NoArgs,
 		Short: "Query the current Oracle params",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -342,7 +342,7 @@ func GetCmdQueryVoteTargets() *cobra.Command {
 		Use:   "vote-targets",
 		Args:  cobra.NoArgs,
 		Short: "Query the current Oracle vote targets",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err

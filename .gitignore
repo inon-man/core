@@ -20,6 +20,7 @@ tools/bin/*
 examples/build/*
 docs/_build
 tools-stamp
+**/scripts/add_burn_tax_exemption_address_proposal.json
 
 # Data - ideally these don't exist
 examples/basecoin/app/data
@@ -52,3 +53,6 @@ dependency-graph.png
 *.aux
 *.out
 *.synctex.gz
+
+# Node.js
+node_modules/

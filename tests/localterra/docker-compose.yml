@@ -1,0 +1,50 @@
+services:
+  terrad:
+    image: localterra-terrad:latest
+    build:
+      context: ../../
+      dockerfile: Dockerfile
+      args:
+        RUNNER_IMAGE: alpine
+    volumes:
+      - ./scripts/setup.sh:/terra/setup.sh
+      - $HOME/.terra-local:/terra/.terra/
+    entrypoint:
+      - /terra/setup.sh
+    ports:
+      - 26657:26657
+      - 1317:1317
+      - 9090:9090
+      - 9091:9091
+      - 6060:6060
+      - 9092:9092
+    links:
+      - redis
+    networks:
+      - localterra
+  oracle:
+    image: localterra-oracle:latest
+    build:
+      context: ./localterra-oracle
+    depends_on:
+      - terrad
+    volumes:
+      - $HOME/.terra-local:/app/.terra/
+    networks:
+      - localterra
+    environment:
+      TESTNET_LCD_URL: http://terrad:1317
+      CONFIG_PATH: .terra/config/config.toml
+    command: start
+  # Enable Redis for sidecar query server
+  redis:
+    image: redis/redis-stack:7.2.0-v3
+    ports:
+      - 6379:6379
+      - 8001:8001
+    volumes:
+      - ./redis-data:/data
+
+networks:
+  localterra:
+    driver: bridge

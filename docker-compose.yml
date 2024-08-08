@@ -1,137 +1,28 @@
-version: '3.8'
-
 services:
-  terradnode0:
-    platform: linux/amd64
-    container_name: terradnode0
-    image: classic-terra/terrad-env
+  terrad:
+    image: terra:latest
+    build:
+      dockerfile: Dockerfile
+      args:
+        RUNNER_IMAGE: alpine
+    volumes:
+      - $HOME/.terra/:/terra/.terra/
+    container_name: terrad-node
     restart: always
     ports:
       - "1317:1317"
       - "9090:9090"
       - "26656-26657:26656-26657"
-    environment:
-      - ID=0
-      - LOG=terrad.log
-    volumes:
-      - ./build:/terrad:Z
+    command:
+      - start
     networks:
-      localnet:
+      terranet:
         ipv4_address: 192.168.10.2
 
-  terradnode1:
-    platform: linux/amd64
-    container_name: terradnode1
-    image: classic-terra/terrad-env
-    restart: always
-    ports:
-      - "1318:1317"
-      - "9091:9090"
-      - "26659-26660:26656-26657"
-    environment:
-      - ID=1
-      - LOG=terrad.log
-    volumes:
-      - ./build:/terrad:Z
-    networks:
-      localnet:
-        ipv4_address: 192.168.10.3
-
-  terradnode2:
-    platform: linux/amd64
-    container_name: terradnode2
-    image: classic-terra/terrad-env
-    restart: always
-    environment:
-      - ID=2
-      - LOG=terrad.log
-    ports:
-      - "1319:1317"
-      - "9092:9090"
-      - "26661-26662:26656-26657"
-    volumes:
-      - ./build:/terrad:Z
-    networks:
-      localnet:
-        ipv4_address: 192.168.10.4
-
-  terradnode3:
-    platform: linux/amd64
-    container_name: terradnode3
-    image: classic-terra/terrad-env
-    restart: always
-    environment:
-      - ID=3
-      - LOG=terrad.log
-    ports:
-      - "1320:1317"
-      - "9093:9090"
-      - "26663-26664:26656-26657"
-    volumes:
-      - ./build:/terrad:Z
-    networks:
-      localnet:
-        ipv4_address: 192.168.10.5
-
-  terradnode4:
-    platform: linux/amd64
-    container_name: terradnode4
-    image: classic-terra/terrad-env
-    restart: always
-    environment:
-      - ID=4
-      - LOG=terrad.log
-    ports:
-      - "1321:1317"
-      - "9094:9090"
-      - "26665-26666:26656-26657"
-    volumes:
-      - ./build:/terrad:Z
-    networks:
-      localnet:
-        ipv4_address: 192.168.10.6
-
-  terradnode5:
-    platform: linux/amd64
-    container_name: terradnode5
-    image: classic-terra/terrad-env
-    restart: always
-    environment:
-      - ID=5
-      - LOG=terrad.log
-    ports:
-      - "1322:1317"
-      - "9095:9090"
-      - "26667-26668:26656-26657"
-    volumes:
-      - ./build:/terrad:Z
-    networks:
-      localnet:
-        ipv4_address: 192.168.10.7
-
-  terradnode6:
-    platform: linux/amd64
-    container_name: terradnode6
-    image: classic-terra/terrad-env
-    restart: always
-    environment:
-      - ID=6
-      - LOG=terrad.log
-    ports:
-      - "1323:1317"
-      - "9096:9090"
-      - "26669-26670:26656-26657"
-    volumes:
-      - ./build:/terrad:Z
-    networks:
-      localnet:
-        ipv4_address: 192.168.10.8
-
 networks:
-  localnet:
+  terranet:
     driver: bridge
     ipam:
       driver: default
       config:
-      -
-        subnet: 192.168.10.0/24
+      - subnet: 192.168.10.0/24

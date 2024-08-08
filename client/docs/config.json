@@ -3,7 +3,7 @@
   "info": {
     "title": "Terra Classic - gRPC Gateway docs",
     "description": "REST interface for Terra Classic https://github.com/classic-terra/core",
-    "version": "2.2.0"
+    "version": "3.0.0"
   },
   "apis": [
     {
@@ -13,9 +13,6 @@
           "Params": "AuthParams"
         }
       }
-    },
-    {
-      "url": "./tmp-swagger-gen/cosmos/authz/v1beta1/query.swagger.json"
     },
     {
       "url": "./tmp-swagger-gen/cosmos/bank/v1beta1/query.swagger.json",
@@ -50,13 +47,25 @@
       }
     },
     {
-      "url": "./tmp-swagger-gen/cosmos/feegrant/v1beta1/query.swagger.json"
-    },
-    {
       "url": "./tmp-swagger-gen/cosmos/gov/v1beta1/query.swagger.json",
       "operationIds": {
         "rename": {
           "Params": "GovParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/cosmos/gov/v1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "GovV1Params",
+          "Proposal": "GovV1Proposal",
+          "Proposals": "GovV1Proposal",
+          "Vote": "GovV1Vote",
+          "Votes": "GovV1Votes",
+          "Deposit": "GovV1Deposit",
+          "Deposits": "GovV1Deposit",
+          "TallyResult": "GovV1TallyResult"
         }
       }
     },
@@ -104,6 +113,22 @@
       "operationIds": {
         "rename": {
           "Params": "UpgradeParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/cosmos/authz/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "AuthzParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/cosmos/feegrant/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "FeegrantParams"
         }
       }
     },
@@ -188,6 +213,25 @@
       "operationIds": {
         "rename": {
           "Params": "IBCTransferParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/ibc/applications/fee/v1/query.swagger.json"
+    },
+    {
+      "url": "./tmp-swagger-gen/ibc/applications/interchain_accounts/host/v1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "IBCInterchainAccountsHostParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/ibc/applications/interchain_accounts/controller/v1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "IBCInterchainAccountsControllerParams"
         }
       }
     }

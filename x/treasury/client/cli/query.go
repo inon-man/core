@@ -47,7 +47,7 @@ Query the stability tax rate of the current epoch.
 
 $ terrad query treasury tax-rate
 `),
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -114,7 +114,7 @@ The stability tax levied on a tx is at most tax cap, regardless of the size of t
 
 $ terrad query treasury tax-caps
 `),
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -145,7 +145,7 @@ Query the reward rate of the current epoch.
 
 $ terrad query treasury reward-weight
 `),
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -176,7 +176,7 @@ Query the tax proceeds corresponding to the current epoch. The return value will
 
 $ terrad query treasury tax-proceeds
 `),
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -207,7 +207,7 @@ Query the seigniorage proceeds corresponding to the current epoch. The return va
 
 $ terrad query treasury seigniorage-proceeds
 `),
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -233,7 +233,7 @@ func GetCmdQueryIndicators() *cobra.Command {
 		Use:   "indicators",
 		Args:  cobra.NoArgs,
 		Short: "Query the current Treasury indicators",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -258,7 +258,7 @@ func GetCmdQueryParams() *cobra.Command {
 		Use:   "params",
 		Args:  cobra.NoArgs,
 		Short: "Query the current Treasury parameters",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -282,7 +282,7 @@ func GetCmdQueryExemptlist() *cobra.Command {
 		Use:   "burn-tax-exemption-list",
 		Args:  cobra.NoArgs,
 		Short: "Query all burn tax exemption addresses",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err

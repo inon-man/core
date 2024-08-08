@@ -1,0 +1,13 @@
+FROM golang:1.22-alpine3.18
+
+RUN set -eux; apk add --no-cache ca-certificates build-base;
+
+# make cosmovisor statically linked
+RUN go install -ldflags '-w -s -linkmode=external -extldflags "-Wl,-z,muldefs -static"' -trimpath cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@latest
+
+COPY ./entrypoint.sh /entrypoint.sh
+
+WORKDIR /terrad
+COPY --from=terra:latest /bin/terrad .
+
+ENTRYPOINT [ "/entrypoint.sh" ]

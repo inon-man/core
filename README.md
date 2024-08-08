@@ -65,44 +65,45 @@ commit: <git commit hash>
 `terrad` is the all-in-one command for operating and interacting with a running Terra node. For comprehensive coverage on each of the available functions, see [the terrad reference information](https://docs.terra.money/docs/develop/how-to/terrad/README.html). To view various subcommands and their expected arguments, use the `$ terrad --help` command:
 
 <pre>
-        <div align="left">
-        <b>$ terrad --help</b>
+<div align="left">
+<b>$ terrad --help</b>
+Stargate Terra App
 
-        Stargate Terra App
+Usage:
+  terrad [command]
 
-        Usage:
-          terrad [command]
+Available Commands:
+  add-genesis-account Add a genesis account to genesis.json
+  collect-gentxs      Collect genesis txs and output a genesis.json file
+  debug               Tool for helping with debugging your application
+  export              Export state to JSON
+  gentx               Generate a genesis tx carrying a self delegation
+  help                Help about any command
+  init                Initialize private validator, p2p, genesis, and application configuration files
+  keys                Manage your application's keys
+  migrate             Migrate genesis to a specified target version
+  prune               Prune app history states by keeping the recent heights and deleting old heights
+  query               Querying subcommands
+  rollback            rollback cosmos-sdk and tendermint state by one height
+  snapshots           Manage local snapshots
+  start               Run the full node
+  status              Query remote node for status
+  tendermint          Tendermint subcommands
+  testnet             Initialize files for a terrad testnet
+  tx                  Transactions subcommands
+  validate-genesis    validates the genesis file at the default location or at the location passed as an arg
+  version             Print the application binary version information
 
-        Available Commands:
-          add-genesis-account Add a genesis account to genesis.json
-          collect-gentxs      Collect genesis txs and output a genesis.json file
-          debug               Tool for helping with debugging your application
-          export              Export state to JSON
-          gentx               Generate a genesis tx carrying a self delegation
-          help                Help about any command
-          init                Initialize private validator, p2p, genesis, and application configuration files
-          keys                Manage your application's keys
-          migrate             Migrate genesis to a specified target version
-          query               Querying subcommands
-          rosetta             spin up a rosetta server
-          start               Run the full node
-          status              Query remote node for status
-          tendermint          Tendermint subcommands
-          testnet             Initialize files for a terrad testnet
-          tx                  Transactions subcommands
-          unsafe-reset-all    Resets the blockchain database, removes address book files, and resets data/priv_validator_state.json to the genesis state
-          validate-genesis    validates the genesis file at the default location or at the location passed as an arg
-          version             Print the application binary version information
+Flags:
+  -h, --help                help for terrad
+      --home string         directory for config and data (default "/Users/hanjukim/.terra")
+      --log_format string   The logging format (json|plain) (default "plain")
+      --log_level string    The logging level (trace|debug|info|warn|error|fatal|panic) (default "info")
+      --log_no_color        Disable colored logs
+      --trace               print out full stack trace on errors
 
-        Flags:
-          -h, --help                help for terrad
-              --home string         directory for config and data (default "/Users/$HOME/.terra")
-              --log_format string   The logging format (json|plain) (default "plain")
-              --log_level string    The logging level (trace|debug|info|warn|error|fatal|panic) (default "info")
-              --trace               print out full stack trace on errors
-
-        <b>Use "terrad [command] --help" for more information about a command.</b>
-        </div>
+<b>Use "terrad [command] --help" for more information about a command.<b>
+</div>
 </pre>
 
 ## Node Setup
@@ -121,7 +122,7 @@ The following requirements are recommended for running a `columbus-5` mainnet no
 For configuration and migration instructions for setting up a Columbus-5 mainnet node, visit [The mainnet repo](https://github.com/terra-money/mainnet).
 
 **Terra Node Quick Start**
-```
+```bash
 terrad init nodename
 wget -O ~/.terra/config/genesis.json https://cloudflare-ipfs.com/ipfs/QmZAMcdu85Qr8saFuNpL9VaxVqqLGWNAs72RVFhchL9jWs
 curl https://network.terra.dev/addrbook.json > ~/.terrad/config/addrbook.json
@@ -191,7 +192,7 @@ This guide has been tested against Linux distributions only. To ensure you succe
 
 You can increase this limit by modifying `/etc/security/limits.conf` and raising the `nofile` capability.
 
-```
+```text
 *                soft    nofile          65535
 *                hard    nofile          65535
 ```
@@ -225,7 +226,7 @@ First, create a service definition file in `/etc/systemd/system`.
 
 **Sample file: `/etc/systemd/system/terrad.service`**
 
-```
+```text
 [Unit]
 Description=Terra Daemon
 After=network.target
@@ -294,14 +295,14 @@ journalctl -t terrad -f
 	docker-compose exec node sh /keys-add.sh
 	```
 
-6. Copy your terra wallet address and go to the terra faucet here -> http://45.79.139.229:3000/ Put your address in and give yourself luna coins.
+6. Copy your terra wallet address and go to the terra faucet **TBD** Put your address in and give yourself luna coins.
 
 7. Start the validator
 	```bash
 	docker-compose exec node sh /create-validator.sh
 	```
 
-### Cheat Sheet:
+### Cheat Sheet
 
 #### Start
 
@@ -337,74 +338,53 @@ docker-compose up -d
 
 #### Build from source
 
-```sh
-make build-all -f contrib/terra-operator/Makefile
+```bash
+make build-all
 ```
+
+## Community
+[Discord](https://discord.gg/jvsSKv4x) - TerraClassic Validator
+[CommonWealth](https://commonwealth.im/terra-luna-classic-lunc/discussions) - Luna Classic Community Forum (LUNC)
+[Telegram](https://t.me/+gCxCPohmVBkyNDRl) - Terra Developers Room
 
 ## Resources
 
-- Developer Tools
+### Developer Tools
+- [Terra Classic Docs](https://classic-docs.terra.money) - The official documentation for Terra Classic
+- [TerraWiki.org](https://terrawiki.org) - The Terra community wiki.
+- [Terra.js](https://www.github.com/classic-terra/terra.js) for TypeScript/JavaScript
+- [LocalTerra](https://www.github.com/classic-terra/LocalTerra) can be used to set up a private local testnet with configurable world state
+- [Faucet] **TBD**
 
-  - Terra developer documentation(https://docs.terra.money)
-  - [TerraWiki.org](https://terrawiki.org) - The Terra community wiki.
-  - SDKs
-    - [Terra.js](https://www.github.com/terra-money/terra.js) for JavaScript
-    - [terra-sdk-python](https://www.github.com/terra-money/terra-sdk-python) for Python
-  - [Faucet](https://faucet.terra.money) can be used to get tokens for testnets
-  - [LocalTerra](https://www.github.com/terra-money/LocalTerra) can be used to set up a private local testnet with configurable world state
+### Wallets & Dashboards
+- Galaxy Suite by [Hexxagon](https://www.hexxagon.io/)
+  - [Galaxy Station](https://station.terraclassic.community) for browsers
+  - [Galaxy Station Extension](https://chromewebstore.google.com/detail/galaxy-station-wallet/akckefnapafjbpphkefbpkpcamkoaoai) for browsers
+  - [Galaxy Finder](https://finder.terraclassic.community) block Explorer
+- Terra Station Mobile (Classic & 2.0)
+  - [iOS](https://apps.apple.com/us/app/terra-station/id1548434735)
+  - [Android](https://play.google.com/store/apps/details?id=money.terra.station&hl=en_US&gl=US)
+- [Keplr Wallet](https://www.keplr.app/get)
+- [Ping](https://ping.pub/terra-luna/) - Cosmos Blockchain Explorer And Web Wallet
 
-- Developer Forums
-  - [Terra Developer Discord](https://discord.com/channels/464241079042965516/591812948867940362)
-  - [Terra DEveloper Telegram room](https://t.me/+gCxCPohmVBkyNDRl)
+### DeFi
+- [CoinHall](https://coinhall.org/?tab=tokens&watchlist=false&chains=terraclassic&timeframe=24h&sort=mcap&dir=desc) - Omnichain Trading Terminal
+- [DeFiLlama](https://defillama.com/chain/Terra%20Classic)
 
-
-- Block Explorers
-
-  - [Terra Finder](https://finder.terra.money) - Terra's basic block explorer.
-  - [Terrascope](https://terrascope.info/) - A community-run block explorer with extra features.
-  - [Stake ID](https://terra.stake.id) - A block explorer made by Staking Fund
-  - [Hubble](https://hubble.figment.network/terra/chains/columbus-5) - by Figment
-
-- Wallets
-
-  - [Terra Station](https://station.terra.money) - The official Terra wallet.
-  - Terra Station Mobile
-    - [iOS](https://apps.apple.com/us/app/terra-station/id1548434735)
-    - [Android](https://play.google.com/store/apps/details?id=money.terra.station&hl=en_US&gl=US)
-    
-  - [Falcon Wallet](https://falconwallet.app/)
-  - [Leap Wallet](https://chrome.google.com/webstore/detail/leap-wallet/aijcbedoijmgnlmjeegjaglmepbmpkpi/?utm_source=Leap&utm_medium=Bio&utm_campaign=Leap)
-  - [XDeFi](https://chrome.google.com/webstore/detail/xdefi-wallet/hmeobnfnfcmdkdcmlblgagmfpfboieaf)
-  - [Liquality](https://liquality.io/)
-
-- Research
-
-  - [Agora](https://agora.terra.money) - Research forum
-  - [White Paper](https://assets.website-files.com/611153e7af981472d8da199c/618b02d13e938ae1f8ad1e45_Terra_White_paper.pdf)
-
-## Community
-
-- [Offical Website](https://terra.money)
-- [Discord](https://discord.gg/e29HWwC2Mz)
-- [Telegram](https://t.me/terra_announcements)
-- [Twitter](https://twitter.com/terra_money)
-- [YouTube](https://goo.gl/3G4T1z)
+### Research
+- [Agora](https://classic-agora.terra.money) - Old research forum (read-only)
+- [White Paper](https://assets.website-files.com/611153e7af981472d8da199c/618b02d13e938ae1f8ad1e45_Terra_White_paper.pdf)
 
 ## Contributing
-
 If you are interested in contributing to Terra Core source, please review our [code of conduct](./CODE_OF_CONDUCT.md).
 
 ## License
-
 This software is licensed under the Apache 2.0 license. Read more about it [here](LICENSE).
-
-© 2022 Terraform Labs, PTE LTD
-
 <hr/>
 
 <p>&nbsp;</p>
 <p align="center">
-    <a href="https://terra.money/"><img src="https://assets.website-files.com/611153e7af981472d8da199c/61794f2b6b1c7a1cb9444489_symbol-terra-blue.svg" align="center" width=200/></a>
+    <img src="https://assets.website-files.com/611153e7af981472d8da199c/61794f2b6b1c7a1cb9444489_symbol-terra-blue.svg" align="center" width=200/>
 </p>
 <div align="center">
   <sub><em>Powering the innovation of money.</em></sub>

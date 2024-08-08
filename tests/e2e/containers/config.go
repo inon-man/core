@@ -16,7 +16,7 @@ type ImageConfig struct {
 //nolint:deadcode
 const (
 	// Current Git branch Terra repo/version. It is meant to be built locally.
-	// This image should be pre-built with `make docker-build-debug` either in CI or locally.
+	// This image should be pre-built with `make e2e-build-debug` either in CI or locally.
 	CurrentBranchTerraRepository = "terra"
 	CurrentBranchTerraTag        = "debug"
 	// Hermes repo/version for relayer
