@@ -1,14 +1,15 @@
 #!/usr/bin/make -f
 
 include scripts/makefiles/tools.mk
+include scripts/makefiles/build.mk
 include scripts/makefiles/deps.mk
 include scripts/makefiles/e2e.mk
 include scripts/makefiles/lint.mk
-include scripts/makefiles/localnet.mk
 include scripts/makefiles/proto.mk
 include scripts/makefiles/tests.mk
-include scripts/makefiles/build.mk
 include scripts/makefiles/localterra.mk
+include scripts/makefiles/localnet.mk
+include scripts/makefiles/release.mk
 
 .DEFAULT_GOAL := help
 help:
@@ -26,20 +27,10 @@ help:
 	@echo "  make localterra            Show available localterra commands"
 	@echo "  make localnet              Show available localnet commands"
 	@echo "  make proto                 Show available proto commands"
-	@echo "  make release               Show available release commands"
 	@echo "  make test                  Show available test commands"
+	@echo "  make release               Show available release commands"
 	@echo ""
 	@echo "Run 'make [subcommand]' to see the available commands for each subcommand."
-
-VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
-COMMIT := $(shell git log -1 --format='%H')
-
-LEDGER_ENABLED ?= true
-BUILDDIR ?= $(CURDIR)/build
-HTTPS_GIT := https://github.com/classic-terra/core.git
-DOCKER := $(shell which docker)
-GO_VERSION := $(shell cat go.mod | grep -E 'go [0-9].[0-9]+' | cut -d ' ' -f 2)
-E2E_UPGRADE_VERSION := "v8_1"
 
 # Go version to be used in docker images
 GO_VERSION := $(shell cat go.mod | grep -E 'go [0-9].[0-9]+' | cut -d ' ' -f 2)
@@ -54,6 +45,15 @@ GO_MINIMUM_MINOR_VERSION = $(shell cat go.mod | grep -E 'go [0-9].[0-9]+' | cut 
 GO_VERSION_ERR_MSG = "ERROR: Go version $(GO_MINIMUM_MAJOR_VERSION).$(GO_MINIMUM_MINOR_VERSION)+ is required"
 
 export GO111MODULE = on
+
+VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
+COMMIT := $(shell git log -1 --format='%H')
+
+LEDGER_ENABLED ?= true
+BUILDDIR ?= $(CURDIR)/build
+HTTPS_GIT := https://github.com/classic-terra/core.git
+DOCKER := $(shell which docker)
+E2E_UPGRADE_VERSION := "v8_1"
 
 # process build tags
 
